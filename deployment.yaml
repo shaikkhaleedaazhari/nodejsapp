@@ -1,22 +1,21 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: myapp
-spec:
-  selector:
-    matchLabels:
-      app: myapp
-  template:
-    metadata:
-      labels:
-        app: myapp
-    spec:
-      containers:
-      - name: myapp
-        image: 140023383840.dkr.ecr.us-east-1.amazonaws.com/my:latest
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
-        ports:
-        - containerPort: 3000
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - echo "login in to the ecr"
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/n8f3p5l3/nodejsapp
+      - echo "login sucessfull"
+  
+  build: 
+    commands:
+      - docker build -t public.ecr.aws/n8f3p5l3/nodejsapp/myapp .
+      - echo "built done sucessfull"
+
+  post_build:
+    commands:
+      - echo "pushing to the ECR"
+      - docker push public.ecr.aws/n8f3p5l3/nodejsapp/myapp
+      - echo "pushing done"
+artifacts:
+  files:
+    - deployment.yaml
