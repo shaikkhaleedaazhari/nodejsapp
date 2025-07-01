@@ -1,0 +1,18 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - echo "login in to the ecr"
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/n8f3p5l3/nodejsapp
+      - echo "login sucessfull"
+  
+  build: 
+    commands:
+      - docker build -t public.ecr.aws/n8f3p5l3/nodejsapp/myapp .
+      - echo "built done sucessfull"
+
+  post_build:
+    commands:
+      - echo "pushing to the ECR"
+      - docker push public.ecr.aws/n8f3p5l3/nodejsapp/myapp
+      - echo "pushing done"
